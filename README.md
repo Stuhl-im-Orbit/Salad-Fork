@@ -1,8 +1,14 @@
 # 🥗 Salad Fork 180 - Klipper Configuration
 
-> ⚠️ **Work in Progress:** This configuration is actively being developed and refined.
+> ⚠️ **DISCLAIMER: UNTESTED & WORK IN PROGRESS**
+> The physical printer is currently under construction. While this configuration has been thoroughly structured and logically verified, it has **not yet been physically tested on the actual hardware**. Use extreme caution, double-check all pin assignments, and verify kinematics before homing!
 
-This documentation outlines the Klipper configuration for a **Salad Fork 180**. The configuration features highly dynamic macros, making it flexible, easy to maintain, and fail-safe.
+## 📑 Table of Contents
+1. [Hardware Specifications](#%EF%B8%8F-hardware-specifications)
+2. [Dependencies & Includes](#-dependencies--includes)
+3. [Key Features & Smart Logic](#-key-features--smart-logic)
+4. [Slicer Configuration Guide](#-slicer-configuration-guide)
+5. [Reuse & Porting Guide](#-reuse--porting-guide)
 
 ---
 
@@ -22,22 +28,51 @@ This documentation outlines the Klipper configuration for a **Salad Fork 180**. 
 
 ---
 
+## 🔗 Dependencies & Includes
+
+This configuration relies on external configuration files. Ensure the following files are present in your Klipper configuration directory to prevent startup errors:
+* `mainsail.cfg`: Required for Mainsail integration, web interface states, and standard variables.
+* `toolhead_leds.cfg`: Contains the Neopixel definitions and macro logic required for the visual status feedback.
+
+---
+
 ## 🧠 Key Features & Smart Logic
 
-This configuration leverages advanced Klipper features to fully automate and secure the printing process:
+This configuration leverages advanced Klipper features and communication protocols to fully automate and secure the printing process:
 
-* **Centralized Variable Management (`_MY_VARS`)**
-  All relevant parameters (temperatures, park positions, speeds) are managed in a single macro block. This prevents redundancy and simplifies future adjustments.
-* **Advanced Thermal Management**
-  The `PRINT_START` macro enforces a mechanical heat soak of the print bed before executing Z-tilt or bed meshing. The chamber temperature is controlled dynamically based on the bed temperature.
+### Communication & Sensors
+* **CAN Bus Architecture**
+  The system utilizes a CAN bus network for the toolhead, specifically connecting the Bigtreetech EBB36 and the Cartographer V4 probe via dedicated CAN UUIDs.
+* **SPI Temperature Sensor**
+  The Rapido hotend is configured to use a PT1000 sensor connected via a MAX31865 chip utilizing Software SPI on the EBB36 toolboard.
+
+### Safety & Thermal Management
 * **Active Heat Creep Protection (`_FAN_GUARD`)**
   A background loop continuously monitors the hotend fan RPM (via the tachometer pin). If the RPM drops below 7000 while the heater is active, the system triggers an emergency heater shutdown and pauses the print.
+* **Advanced Thermal Management**
+  The `PRINT_START` macro enforces a mechanical heat soak of the print bed before executing Z-tilt or bed meshing. The chamber temperature is controlled dynamically based on the bed temperature.
+* **Automated VOC Filtration**
+  The Nevermore filter activates automatically when printing high-temperature filaments (triggered by the bed temperature threshold) and runs for an additional 10 minutes after the print finishes to clear residual VOCs.
 * **Safe Sensorless Homing**
   The TMC current for the X and Y motors is reduced to 0.50A prior to homing to minimize mechanical stress. An intelligent "blind Z-lift" protects the print surface if the Z-axis has not yet been homed.
+
+### Macro Logic & Automation
+* **Centralized Variable Management (`_MY_VARS`)**
+  All relevant parameters (temperatures, park positions, speeds) are managed in a single macro block. This prevents redundancy and simplifies future adjustments.
 * **Smart Filament Sensor Logic**
   To prevent false runout triggers caused by abrupt extrusion changes, the BTT SFS V2.0 is temporarily disabled during the start sequence and the prime line. It is safely re-enabled by the slicer starting at layer 2.
-* **Automated VOC Filtration**
-  The Nevermore filter activates automatically when printing high-temperature filaments (triggered by the bed temperature) and runs for an additional 10 minutes after the print finishes to clear residual VOCs.
+* **Dedicated Filament Management**
+  Includes custom `LOAD_FILAMENT`, `UNLOAD_FILAMENT`, and `M600` macros. These verify minimum extrusion temperatures before execution and safely park the toolhead for user interaction.
+* **Advanced Purge Sequence**
+  Features a high-performance Prime Blob sequence (inspired by RatOS) to ensure optimal nozzle priming and clean breakaways before the print starts.
+* **Quick Positioning**
+  The `CENTER` macro calculates the exact middle of the current bed limits dynamically and moves the toolhead safely, respecting the current Z-height to avoid collisions.
+* **Comprehensive Idle Management**
+  Handles automated toolhead parking, safe power-down of heaters and steppers, and the cancellation of pending timers (like filter cooldowns) during idle timeouts or print cancellations.
+* **TMC Autotune Integration**
+  Incorporates optimized motor registers automatically, tuning the Z-axis for silent operation and the XY/Extruder axes for maximum performance.
+* **LED Status Feedback**
+  Provides visual feedback representing the current machine state (heating, probing, printing, etc.), based on the proven Voron Stealthburner logic.
 * **Slicer Compatibility**
   Integrated dummy macros and command translations (G27, G29, M108, etc.) catch and prevent console spam or print aborts caused by hardcoded Marlin or RepRap commands sent by the slicer.
 
