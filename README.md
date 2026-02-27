@@ -156,3 +156,6 @@ While not explicitly generated as a template, this configuration can easily serv
 
 ### 5. Hotend Fan Protection
 * **No Tachometer Pin:** If you are not using a 3-pin hotend fan with a tachometer wire, you must remove or comment out the `tachometer_pin` definition in the `[heater_fan hotend_fan]` section. You can then simply delete the `[delayed_gcode _FAN_GUARD]` macro entirely, as the hardware monitoring will not function without that pin.
+
+### 6. Firmware Retraction
+* **Mandatory Requirement:** The `[firmware_retraction]` block must be defined and enabled in your configuration. Macros like `PRINT_END` and the filament management routines rely heavily on native `G10` / `G11` commands. Plausible default values (e.g., length: 0.8, speed: 60) are completely sufficient to avoid execution errors; extensive tuning is not required just for the macros to work safely.
