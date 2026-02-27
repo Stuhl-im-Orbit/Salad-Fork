@@ -43,8 +43,8 @@ This configuration leverages advanced Klipper features and communication protoco
 ### Architecture & Code Structure
 * **Strict Jinja2 Namespace Isolation**
   All complex macros separate data retrieval, math, and logic from G-Code execution. Variables (`ref`), parameters (`param`), logic checks (`logic`), and kinematics (`pos`, `speed`) are defined upfront using strictly typed namespaces. This ensures predictable, crash-free execution.
-* **Centralized Variable Management (`_MY_VARS`)**
-  All relevant parameters (temperatures, park positions, speeds) are managed in a single macro block. This prevents redundancy and simplifies future porting or hardware adjustments.
+* **Dual Variable Management (`_CLIENT_VARIABLE` & `_MY_VARS`)**
+  The configuration strictly separates parameters into two dedicated macro blocks. `_CLIENT_VARIABLE` hooks directly into the official Mainsail standard macros (handling variables like pause/resume/cancel park positions and idle timeouts), while `_MY_VARS` specifically manages all custom logic for this machine (kinematics, custom temperatures, purge distances, timers). This prevents conflicts and keeps Mainsail updates seamless.
 
 ### Safety & Mechanical Protection
 * **Inherent Boundary Checks**
@@ -53,8 +53,10 @@ This configuration leverages advanced Klipper features and communication protoco
   The TMC current for the X and Y motors is automatically reduced to 0.50A prior to homing to minimize mechanical stress on the drivetrain. It also includes relative back-off moves to clear the StallGuard registers safely.
 * **Active Heat Creep Protection (`_FAN_GUARD`)**
   A background loop continuously monitors the hotend fan RPM (via the tachometer pin). If the RPM drops below a critical threshold while the heater is active, the system triggers an emergency heater shutdown and pauses the print to prevent hotend clogs.
-* **Cartographer Thermal Limits**
-  The Cartographer touch probe is restricted by an `UNSAFE_max_touch_temperature` setting, preventing nozzle physical probing if the hotend is too hot, thereby protecting the print surface.
+
+### Commissioning & Calibration
+* **Safe PID Tuning Macros (`PID_BED`, `PID_HOTEND`)**
+  Inspired by the official Voron Commissioning guidelines. These automated macros safely home the printer (if required), move the toolhead to the exact center of the bed, and position the nozzle at a realistic Z-height (e.g., 5mm above the bed with the part cooling fan active at 25% for the hotend) before executing the native calibration. This ensures the PID values are tuned under realistic thermal airflow conditions.
 
 ### Thermal Management & Filtration
 * **Advanced Thermal Soak**
