@@ -62,7 +62,7 @@ This configuration leverages advanced Klipper features and communication protoco
 * **Advanced Thermal Soak**
   The `PRINT_START` macro enforces a mandatory mechanical heat soak of the print bed before executing Z-tilt or bed meshing to account for thermal expansion. 
 * **Dynamic Chamber Control**
-  The chamber temperature target is dynamically calculated based on the bed temperature if no explicit slicer parameter is provided.
+  The chamber temperature target is dynamically calculated based on the bed temperature if no explicit slicer parameter is provided (> 0°C). If the target bed temperature is 90°C or higher, the chamber defaults to 45°C; otherwise, it defaults to a safe 15°C to avoid endless waiting for cold prints.
 * **Automated VOC Filtration**
   The Nevermore filter activates automatically when printing high-temperature filaments (triggered by the bed temperature threshold) and runs for an additional 10 minutes post-print to clear residual VOCs.
 
@@ -72,7 +72,7 @@ This configuration leverages advanced Klipper features and communication protoco
 * **Smart Filament Sensor Logic**
   To prevent false runout triggers caused by abrupt extrusion changes, the BTT SFS V2.0 is temporarily disabled during the start sequence and the prime line. It is safely re-enabled by the slicer starting at layer 2.
 * **Advanced Purge Sequence**
-  Features a high-performance Prime Blob sequence (inspired by RatOS) to ensure optimal nozzle priming and clean breakaways before the print starts.
+  Features a Prime Blob sequence (inspired by RatOS) to ensure optimal nozzle priming and clean breakaways before the print starts.
 * **Comprehensive Idle Management**
   Handles automated toolhead parking, safe power-down of heaters and steppers, and the cancellation of pending timers (like filter cooldowns) during idle timeouts or print cancellations.
 * **TMC Autotune Integration**
@@ -153,3 +153,6 @@ While not explicitly generated as a template, this configuration can easily serv
 * **Coordinates:** Update `z_positions` (exact physical motor/pivot points) and `points` (probe locations) to match your new bed geometry.
 * `[bed_mesh]`: Set the new `zero_reference_position`, `mesh_min`, & `mesh_max`.
 * `[resonance_tester]`: Change `probe_points` to the new bed center.
+
+### 5. Hotend Fan Protection
+* **No Tachometer Pin:** If you are not using a 3-pin hotend fan with a tachometer wire, you must remove or comment out the `tachometer_pin` definition in the `[heater_fan hotend_fan]` section. You can then simply delete the `[delayed_gcode _FAN_GUARD]` macro entirely, as the hardware monitoring will not function without that pin.
