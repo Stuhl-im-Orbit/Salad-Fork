@@ -42,6 +42,7 @@ This configuration leverages advanced Klipper features and communication protoco
 
 ### Architecture & Code Structure
 * **Dual Variable Management:** The configuration strictly separates parameters. `_CLIENT_VARIABLE` hooks directly into the official Mainsail standard macros. `_MY_VARS` manages all custom logic for this machine (kinematics, purge distances, wiper coordinates).
+* **Asynchronous State Management:** Uses a dedicated dummy macro (`_CHAMBER_STATE`) to safely store and pass status variables between the synchronous print phases and the asynchronous delayed G-code loops.
 
 ### Safety & Mechanical Protection
 * **Safe Sensorless Homing:** The TMC current for the X and Y motors is automatically reduced to 0.50A prior to homing to minimize mechanical stress on the drivetrain.
@@ -53,7 +54,7 @@ This configuration leverages advanced Klipper features and communication protoco
 * **TMC Autotune Integration:** Incorporates optimized motor registers automatically, tuning the Z-axis for silent operation and the XY/Extruder axes for maximum performance.
 
 ### Thermal Management & Filtration
-* **Advanced Thermal Soak:** The `PRINT_START` macro enforces a mandatory mechanical heat soak of the print bed before executing Z-tilt or bed meshing to account for thermal expansion. 
+* **Advanced & Abortable Thermal Soak:** The `PRINT_START` macro enforces a mandatory mechanical heat soak of the print bed before executing Z-tilt or bed meshing to account for thermal expansion. The chamber temperature wait sequence runs entirely asynchronously, keeping the Klipper interface responsive. This phase can be manually bypassed at any time using the `SKIP_CHAMBER_SOAK` macro.
 * **Dynamic Chamber Control:** The chamber temperature target is dynamically calculated. If the target bed temperature is 90°C or higher, the chamber defaults to 45°C; otherwise, it defaults to a safe 15°C.
 * **Automated VOC Filtration:** The Nevermore filter activates automatically when printing high-temperature filaments and runs for an additional 10 minutes post-print to clear residual VOCs.
 
