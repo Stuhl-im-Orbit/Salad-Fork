@@ -1,5 +1,9 @@
 # 🥗 Salad Fork 180 - Klipper Configuration
 
+> **⚠️ WARNING & DISCLAIMER**
+> **This printer and its configuration are currently under construction (Work in Progress).**
+> Use these configuration files entirely at your own risk. I assume no liability or responsibility for any damage to your hardware, property, or personal injury resulting from the use of this configuration. Please review and verify all settings carefully before applying them to your specific machine.
+
 This document provides a comprehensive overview of the Klipper configuration for the Salad Fork 180 3D printer. The setup is engineered for maximum reliability, hardware safety, and dynamic adaptability, utilizing a full CAN-bus ecosystem.
 
 ---
