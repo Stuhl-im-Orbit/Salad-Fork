@@ -105,12 +105,17 @@ This document provides a comprehensive overview of the Klipper configuration for
 
 To ensure the macros function correctly, parameters must be passed exactly as configured in your slicer. No manual temperature commands are required in the start G-code.
 
-### 🔪 Orca Slicer & PrusaSlicer
+### 🔪 Orca Slicer, PrusaSlicer & SuperSlicer
 
 **Machine Start G-Code:**
 ```gcode
+; Prevents slicer hardcoded heating sequences
+M190 S0
+M109 S0
 ; Pass parameters to Klipper and let the macro handle everything
 PRINT_START BED_TEMP=[first_layer_bed_temperature] EXTRUDER_TEMP=[first_layer_temperature] CHAMBER=[chamber_temperature]
+; Send total layer count to Mainsail UI
+SET_PRINT_STATS_INFO TOTAL_LAYER=[total_layer_count]
 ```
 
 **Machine End G-Code:**
@@ -125,6 +130,13 @@ PRINT_END
 G92 E0
 ; Safely enable filament sensor at layer 2
 {if layer_num == 2}_TOGGLE_FILAMENT_SENSORS ENABLE=1{endif}
+```
+
+**After Layer Change G-Code:**
+```gcode
+; Update current layer count in Mainsail UI and push message to display
+SET_PRINT_STATS_INFO CURRENT_LAYER={layer_num + 1}
+SET_DISPLAY_TEXT MSG="Layer {layer_num + 1}/[total_layer_count]"
 ```
 
 ### 🔪 Ultimaker Cura
