@@ -112,10 +112,10 @@ To ensure the macros function correctly, parameters must be passed exactly as co
 ; Prevents slicer hardcoded heating sequences
 M190 S0
 M109 S0
-; Pass parameters to Klipper and let the macro handle everything
-PRINT_START BED_TEMP=[first_layer_bed_temperature] EXTRUDER_TEMP=[first_layer_temperature] CHAMBER=[chamber_temperature]
 ; Send total layer count to Mainsail UI
 SET_PRINT_STATS_INFO TOTAL_LAYER=[total_layer_count]
+; Pass parameters to Klipper and let the macro handle everything
+PRINT_START BED_TEMP=[first_layer_bed_temperature] EXTRUDER_TEMP=[first_layer_temperature] CHAMBER=[chamber_temperature]
 ```
 
 **Machine End G-Code:**
@@ -154,9 +154,9 @@ PRINT_END
 ```
 
 **Layer Change Handling in Cura:**
-Cura does not natively feature a "Before Layer Change" text box in the standard Machine Settings. To trigger the filament sensors at layer 2 and reset the extruder, you have two options:
+Cura does not natively feature a "Before Layer Change" text box in the standard Machine Settings. To trigger the filament sensors at layer 2 and reset the extruder, you have this option:
 
-**Option 1: Using Post Processing Scripts (Recommended)**
+** Using Post Processing Scripts **
 1. Go to `Extensions` > `Post Processing` > `Modify G-Code`.
 2. Add the script `Insert at layer change`.
 3. Set **When to insert** to `Before`.
@@ -168,6 +168,3 @@ Cura does not natively feature a "Before Layer Change" text box in the standard 
 5. Add another `Search and Replace` script to enable the sensor specifically at Layer 2:
    * **Search:** `;LAYER:1` *(Note: Cura starts counting at 0)*
    * **Replace:** `;LAYER:1\n_TOGGLE_FILAMENT_SENSORS ENABLE=1`
-
-**Option 2: Simplify via Start G-Code**
-If you prefer not to use Post-Processing scripts, simply let the `PRIME_BLOB` macro enable the sensor at the very end of your pre-print routine (already configured in your `printer.cfg`), and skip the layer 2 conditional entirely.
