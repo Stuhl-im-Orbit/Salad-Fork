@@ -40,7 +40,7 @@
 | Motors Z | 3× Moons LE174S-T0808-200-AR3-S-065 (0.65 A Peak · Z-Tilt capable) |
 | Filament Sensor | BTT SFS V2.0 (Combined Switch & Motion Sensor) |
 
-Documentation: [Salad Fork GitHub](https://github.com/Stuhl-im-Orbit/Salad-Fork)
+Documentation: [Salad Fork GitHub](https://github.com/PrintersForAnts/Salad_Fork)
 
 ---
 
