@@ -1,7 +1,6 @@
 # Salad Fork 180: Klipper Configuration
 
-> **Work in Progress**
-> This printer and its configuration are currently under construction. Use these files entirely at your own risk. I assume no liability for any damage to hardware, property, or personal injury resulting from their use. Please review and verify all settings carefully before applying them to your machine.
+> Use these files entirely at your own risk. I assume no liability for any damage to hardware, property, or personal injury resulting from their use. Please review and verify all settings carefully before applying them to your machine.
 
 ---
 
